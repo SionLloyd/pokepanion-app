@@ -9,7 +9,7 @@ import {
 
 const EventInfo = ({ navigation, route }) => {
 
-  const { eventId } = route.params
+  const { eventId, eventTips } = route.params
 
   const deleteAlert = () => {
     return (

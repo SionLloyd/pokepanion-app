@@ -13,7 +13,8 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { format, parseISO, parse } from 'date-fns'
+import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
+import { format, parseISO } from 'date-fns'
 
 type event = {
   _id: number,
@@ -24,9 +25,77 @@ type event = {
 
 const Finder = ({ navigation }) => {
 
+  const [index, setIndex] = React.useState(0);
   const [isLoading, setLoading] = useState(true)
   const [sortedEvents, setSortedEvents] = useState([])
   const [modalVisible, setModalVisible] = useState(false)
+
+  const FirstRoute = () => (
+    <SafeAreaView style={{ flex: 1, }}>
+      {isLoading ? (
+        <ActivityIndicator
+          animating
+          color={'red'}
+        />
+      ) : (
+        <SectionList
+          sections={sortedEvents}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={(item) => renderItem(item)}
+          renderSectionHeader={({ section }) => (
+            <>
+              <View style={{ backgroundColor: '#F2F2F2', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginHorizontal: 8 }}>
+                <Text style={{fontSize: 32, fontWeight: 'bold' }}>{section.title}</Text>
+                <Image
+                  style={{height: 50, width: 50}}
+                  resizeMode='contain'
+                  source={{ uri: 'https://static.vecteezy.com/system/resources/previews/014/586/732/original/calendar-icon-a-red-calendar-for-reminders-of-appointments-and-important-festivals-in-the-year-png.png'}}
+                />
+              </View>
+            </>
+          )}
+        />
+      )}
+
+      <AddEvent/>
+      
+      <View style={{ flex: 1, justifyContent: 'center', paddingBottom: 10}}>
+        <Pressable onPress={() => setModalVisible(true)} style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'row', height: 50, backgroundColor: 'white', borderWidth: 2, borderColor: 'black', borderRadius: 20, marginHorizontal: 10 }}>
+          <Text style={{ fontSize: 20, fontWeight: 'bold' }}>
+            Add an event
+          </Text>
+        </Pressable>
+      </View>
+
+    </SafeAreaView>
+  );
+
+  const SecondRoute = () => (
+    <SafeAreaView style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      <Text style={{ fontSize: 20, fontWeight: 'bold' }}>
+        Coming Soon...
+      </Text>
+      <View style={{padding: 50}}>
+        <Image
+          style={{height: 200, width: 200}}
+          resizeMode='contain'
+          source={{uri: 'https://archives.bulbagarden.net/media/upload/6/61/Red_on_computer.png'}}
+        />
+      </View>
+      
+
+    </SafeAreaView>
+  );
+
+  const renderScene = SceneMap({
+    list: FirstRoute,
+    calendar: SecondRoute,
+  });
+
+  const [routes] = React.useState([
+    { key: 'list', title: 'List' },
+    { key: 'calendar', title: 'Calendar' },
+  ]);
 
   useEffect(() => {
     const getEvents = async () => {
@@ -87,12 +156,14 @@ const Finder = ({ navigation }) => {
             <View style={{ height: Dimensions.get('window').height / 2, width: Dimensions.get('window').width, margin: 10, backgroundColor: 'white', borderRadius: 20, padding: 35, alignItems: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.25, shadowRadius: 4, elevation: 5}}> 
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: Dimensions.get('window').width, padding: 10 }}>
                 <Text style={{ fontSize: 25, fontWeight: 'bold' }}>
-                  Add an event
+                  New event
                 </Text>
-                <Pressable style={{ height: 30, width: 40, justifyContent: 'center' }} onPress={() => setModalVisible(!modalVisible)}>
-                  <Text>
-                    Close
-                  </Text>
+                <Pressable style={{ height: 30, width: 30, justifyContent: 'center' }} onPress={() => setModalVisible(!modalVisible)}>
+                  <Image
+                    style={{height: 30, width: 30}}
+                    resizeMode='contain'
+                    source={{ uri: 'https://d29fhpw069ctt2.cloudfront.net/icon/image/39219/preview.png' }}
+                  />
                 </Pressable>
               </View>
 
@@ -102,7 +173,7 @@ const Finder = ({ navigation }) => {
                 </Text>
                 <TextInput
                   onChangeText={setEventName}
-                  placeholder='Store or venue name'
+                  placeholder=' Store or venue name'
                   placeholderTextColor='grey'
                   style={{ height: 40, borderWidth: 1 }}
                   value={eventName}
@@ -115,7 +186,7 @@ const Finder = ({ navigation }) => {
                 </Text>
                 <TextInput
                   onChangeText={setEventType}
-                  placeholder='Challenge? Cup? Regional?'
+                  placeholder=' Challenge? Cup? Regional?'
                   placeholderTextColor='grey'
                   style={{ height: 40, borderWidth: 1 }}
                   value={eventType}
@@ -128,7 +199,7 @@ const Finder = ({ navigation }) => {
                 </Text>
                 <TextInput
                   onChangeText={setEventDate}
-                  placeholder='FIX ME'
+                  placeholder=' FIX ME'
                   placeholderTextColor='grey'
                   style={{ height: 40, borderWidth: 1 }}
                   value={eventDate}
@@ -137,13 +208,13 @@ const Finder = ({ navigation }) => {
 
               <View style={{ width: Dimensions.get('window').width, padding: 10 }}>
                 <Pressable 
-                  style={{ height: 40, alignItems: 'center', justifyContent: 'center', backgroundColor: 'cyan', borderRadius: 20 }} 
+                  style={{ height: 40, alignItems: 'center', justifyContent: 'center', backgroundColor: 'cyan', borderRadius: 20, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.25, shadowRadius: 4, elevation: 5 }} 
                   onPress={() => {
                     addRequest(eventName, eventType, eventDate)
                     setModalVisible(!modalVisible)
                   }}
                 >
-                  <Text>
+                  <Text style={{ fontWeight: 'bold' }}>
                     Submit
                   </Text>
                 </Pressable>
@@ -179,72 +250,76 @@ const Finder = ({ navigation }) => {
   const renderItem = ({item}) => {
     const image = item.type === 'Cup' ? 'https://img.icons8.com/color/512/superball.png' : 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Poké_Ball_icon.svg/1200px-Poké_Ball_icon.svg.png'
     const eventISO = parseISO(item.date)
-    const eventMonth = format(eventISO, 'dd-MM-yyyy')
+    const eventMonth = format(eventISO, 'PPPPpppp')
 
     return (
       <Pressable 
-        style={{backgroundColor: '#f9c2ff', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', margin: 8}}
-        onPress={() => navigation.navigate('EventInfo', { eventId: item._id })}
+        style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginHorizontal: 5, marginBottom: 5 }}
+        onPress={() => navigation.navigate('EventInfo', { eventId: item._id, eventTips: item.tips })}
       >
-        <Text style={{fontSize: 12}}>{eventMonth}</Text>
-        <Text style={{fontSize: 12}}>{item.name}</Text>
-        <Text style={{fontSize: 12}}>{item.type}</Text>
-        <Image
-          style={{height: 50, width: 50}}
-          resizeMode='contain'
-          source={{ uri: image }}
-        />
+        <View style={{ flex: 1, backgroundColor: '', padding: 10, paddingBottom: 5 }}>
+          <Text style={{ fontSize: 12, paddingBottom: 5 }}>{eventMonth}</Text>
+          <View style={{ flex: 1, flexDirection: 'row', backgroundColor: 'white', shadowColor: '#171717', shadowOffset: {width: -2, height: 4}, shadowOpacity: 0.2, shadowRadius: 3, borderRadius: 10 }}>
+            <Image
+              style={{height: 50, width: 50}}
+              resizeMode='contain'
+              source={{ uri: image }}
+            />
+            <View style={{ paddingLeft: 10, justifyContent: 'center'}}>
+              <Text style={{fontSize: 12, fontWeight: 'bold'}}>{item.name}</Text>
+              <Text style={{fontSize: 12}}>{item.type}</Text>
+            </View>
+          </View>
+        </View>
+        
       </Pressable>
     )
   }
 
-  return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
-      <View style={{ borderWidth: 1, height: 40, alignItems: 'center', borderRadius: 20, paddingLeft: 10, flexDirection: 'row', marginHorizontal: 10 }}>
-        <Text>
-          Filter:
-        </Text>
-        <Pressable style={{ borderWidth: 1, borderRadius: 20, marginLeft: 10, padding: 10 }}>
-          <Text>
-            By: All
-          </Text>
-        </Pressable>
-      </View>
-
-      {isLoading ? (
-        <ActivityIndicator
-          animating
-          color={'red'}
-        />
-      ) : (
-        <SectionList
-          sections={sortedEvents}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={(item) => renderItem(item)}
-          renderSectionHeader={({ section }) => (
-            <>
-              <View style={{ backgroundColor: 'white', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginHorizontal: 8 }}>
-                <Text style={{fontSize: 32, fontWeight: 'bold', backgroundColor: '#fff'}}>{section.title}</Text>
+  const renderTabBar = (props) => (
+    <TabBar
+      {...props}
+      renderLabel={({ route, focused, color }) => (
+        <View>
+            {route.title === 'List' ? (
+              <View style={{ flexDirection: 'row', alignItems: 'center'}}>
                 <Image
-                  style={{height: 50, width: 50}}
+                  style={{height: 30, width: 30}}
                   resizeMode='contain'
-                  source={{ uri: 'https://static.vecteezy.com/system/resources/previews/014/586/732/original/calendar-icon-a-red-calendar-for-reminders-of-appointments-and-important-festivals-in-the-year-png.png'}}
+                  source={{uri: 'https://icons.veryicon.com/png/o/application/immwa2016/list-11.png'}}
                 />
+                <Text style={{ color: 'black', paddingLeft: 5 }}>
+                  {route.title}
+                </Text>
               </View>
-            </>
-          )}
-        />
+            ) : (
+              <View style={{ flexDirection: 'row', alignItems: 'center'}}>
+                <Image
+                  style={{height: 30, width: 30}}
+                  resizeMode='contain'
+                  source={{uri: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Calendar_icon_2.svg/1978px-Calendar_icon_2.svg.png'}}
+                />
+                <Text style={{ color: 'black', paddingLeft: 5 }}>
+                  {route.title}
+                </Text>
+              </View>
+            )}
+        </View>
       )}
+      indicatorStyle={{ backgroundColor: 'grey' }}
+      style={{ backgroundColor: 'white' }}
+    />
+  )
 
-      <AddEvent/>
-      
-      <Pressable onPress={() => setModalVisible(true)} style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'row', height: 40 }}>
-        <Text style={{ fontSize: 20, fontWeight: 'bold' }}>
-          Add an event
-        </Text>
-      </Pressable>
-    </SafeAreaView>
-  );
+  return (
+    <TabView
+      renderTabBar={renderTabBar}
+      navigationState={{ index, routes }}
+      renderScene={renderScene}
+      onIndexChange={setIndex}
+      initialLayout={{ width: Dimensions.get('window').width }}
+    />
+  )
 }
 
 export default Finder
