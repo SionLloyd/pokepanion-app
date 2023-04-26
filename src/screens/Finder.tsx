@@ -77,78 +77,103 @@ const Finder = ({ navigation }) => {
     const [eventDate, setEventDate] = React.useState('');
 
     return (
-        <View style={{flex: 1}}>
-          <Modal
-            animationType="slide"
-            transparent={true}
-            visible={modalVisible}
-            onRequestClose={() => {}}>
-            <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{flex: 1, justifyContent: 'flex-end', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.7)' }}>
-              <View style={{ height: Dimensions.get('window').height / 2, width: Dimensions.get('window').width, margin: 10, backgroundColor: 'white', borderRadius: 20, padding: 35, alignItems: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.25, shadowRadius: 4, elevation: 5}}> 
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: Dimensions.get('window').width, padding: 10 }}>
-                  <Text style={{ fontSize: 25, fontWeight: 'bold' }}>
-                    Add an event
-                  </Text>
-                  <Pressable style={{ height: 30, width: 40, justifyContent: 'center' }} onPress={() => setModalVisible(!modalVisible)}>
-                    <Text>
-                      Close
-                    </Text>
-                  </Pressable>
-                </View>
-
-                <View style={{ width: Dimensions.get('window').width, padding: 10, }}>
+      <View style={{flex: 1}}>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => {}}>
+          <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{flex: 1, justifyContent: 'flex-end', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.7)' }}>
+            <View style={{ height: Dimensions.get('window').height / 2, width: Dimensions.get('window').width, margin: 10, backgroundColor: 'white', borderRadius: 20, padding: 35, alignItems: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.25, shadowRadius: 4, elevation: 5}}> 
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: Dimensions.get('window').width, padding: 10 }}>
+                <Text style={{ fontSize: 25, fontWeight: 'bold' }}>
+                  Add an event
+                </Text>
+                <Pressable style={{ height: 30, width: 40, justifyContent: 'center' }} onPress={() => setModalVisible(!modalVisible)}>
                   <Text>
-                    Name
+                    Close
                   </Text>
-                  <TextInput
-                    onChangeText={setEventName}
-                    placeholder='Store or venue name'
-                    placeholderTextColor='grey'
-                    style={{ height: 40, borderWidth: 1 }}
-                    value={eventName}
-                  />
-                </View>
-
-                <View style={{ width: Dimensions.get('window').width, padding: 10, }}>
-                  <Text>
-                    Type
-                  </Text>
-                  <TextInput
-                    onChangeText={setEventType}
-                    placeholder='Challenge? Cup? Regional?'
-                    placeholderTextColor='grey'
-                    style={{ height: 40, borderWidth: 1 }}
-                    value={eventType}
-                  />
-                </View>
-
-                <View style={{ width: Dimensions.get('window').width, padding: 10, }}>
-                  <Text>
-                    Date
-                  </Text>
-                  <TextInput
-                    onChangeText={setEventDate}
-                    placeholder='FIX ME'
-                    placeholderTextColor='grey'
-                    style={{ height: 40, borderWidth: 1 }}
-                    value={eventDate}
-                  />
-                </View>
-
-                <View style={{ width: Dimensions.get('window').width, padding: 10 }}>
-                  <Pressable style={{ height: 40, alignItems: 'center', justifyContent: 'center', backgroundColor: 'cyan', borderRadius: 20 }} onPress={() => setModalVisible(!modalVisible)}>
-                    <Text>
-                      Submit
-                    </Text>
-                  </Pressable>
-                </View>
-                
-                
+                </Pressable>
               </View>
-            </KeyboardAvoidingView>
-          </Modal>
-        </View>
+
+              <View style={{ width: Dimensions.get('window').width, padding: 10, }}>
+                <Text>
+                  Name
+                </Text>
+                <TextInput
+                  onChangeText={setEventName}
+                  placeholder='Store or venue name'
+                  placeholderTextColor='grey'
+                  style={{ height: 40, borderWidth: 1 }}
+                  value={eventName}
+                />
+              </View>
+
+              <View style={{ width: Dimensions.get('window').width, padding: 10, }}>
+                <Text>
+                  Type
+                </Text>
+                <TextInput
+                  onChangeText={setEventType}
+                  placeholder='Challenge? Cup? Regional?'
+                  placeholderTextColor='grey'
+                  style={{ height: 40, borderWidth: 1 }}
+                  value={eventType}
+                />
+              </View>
+
+              <View style={{ width: Dimensions.get('window').width, padding: 10, }}>
+                <Text>
+                  Date
+                </Text>
+                <TextInput
+                  onChangeText={setEventDate}
+                  placeholder='FIX ME'
+                  placeholderTextColor='grey'
+                  style={{ height: 40, borderWidth: 1 }}
+                  value={eventDate}
+                />
+              </View>
+
+              <View style={{ width: Dimensions.get('window').width, padding: 10 }}>
+                <Pressable 
+                  style={{ height: 40, alignItems: 'center', justifyContent: 'center', backgroundColor: 'cyan', borderRadius: 20 }} 
+                  onPress={() => {
+                    addRequest(eventName, eventType, eventDate)
+                    setModalVisible(!modalVisible)
+                  }}
+                >
+                  <Text>
+                    Submit
+                  </Text>
+                </Pressable>
+              </View>
+              
+              
+            </View>
+          </KeyboardAvoidingView>
+        </Modal>
+      </View>
     )
+  }
+
+  const addRequest = (eventName: string, eventType: string, eventDate: string) => {
+    async function addPost() {
+      try {
+        await fetch(
+          'http://localhost:8000/api/events/add', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({name: eventName, type: eventType, date: eventDate})
+          }
+        ).then(res => console.log(res)).catch(err => console.log(err))
+        console.log('addPost')
+      } catch (error) {
+        console.error(error)
+      }
+    }
+
+    addPost()
   }
 
   const renderItem = ({item}) => {
