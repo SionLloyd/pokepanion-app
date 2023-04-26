@@ -6,6 +6,7 @@ import {name as appName} from './app.json';
 
 import Builder from './src/screens/Builder'
 import Calculator from './src/screens/Calculator'
+import EventInfo from './src/screens/EventInfo'
 import Finder from './src/screens/Finder'
 import GameScreen from './src/screens/GameScreen'
 import Home from './src/screens/Home'
@@ -70,6 +71,11 @@ const App = () => {
           name="Tournament"
           component={Tournament}
           options={{title: 'Tournament'}}
+        />
+        <Stack.Screen
+          name="EventInfo"
+          component={EventInfo}
+          options={{title: 'Information'}}
         />
       </Stack.Navigator>
     </NavigationContainer>
