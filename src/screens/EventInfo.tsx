@@ -3,6 +3,7 @@ import {
   Alert,
   Dimensions,
   FlatList,
+  Image,
   KeyboardAvoidingView,
   Modal,
   Platform,
@@ -10,6 +11,7 @@ import {
   SafeAreaView,
   ScrollView,
   Text,
+  TextInput,
   View,
 } from 'react-native';
 
@@ -51,6 +53,10 @@ const EventInfo = ({ navigation, route }) => {
   }
 
   const AddTrainerTipModal = () => {
+
+    const [tipType, setTipType] = React.useState('');
+    const [tipData, setTipData] = React.useState('');
+
     return (
       <View style={{flex: 1}}>
         <Modal
@@ -61,6 +67,46 @@ const EventInfo = ({ navigation, route }) => {
         >
           <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{flex: 1, justifyContent: 'flex-end', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.7)' }}>
             <View style={{ height: Dimensions.get('window').height / 2, width: Dimensions.get('window').width, margin: 10, backgroundColor: 'white', borderRadius: 20, padding: 35, alignItems: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.25, shadowRadius: 4, elevation: 5}}> 
+              
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: Dimensions.get('window').width, padding: 10 }}>
+                <Text style={{ fontSize: 25, fontWeight: 'bold' }}>
+                  New trainer tip
+                </Text>
+                <Pressable style={{ height: 30, width: 30, justifyContent: 'center' }} onPress={() => setModalVisible(!modalVisible)}>
+                  <Image
+                    style={{height: 30, width: 30}}
+                    resizeMode='contain'
+                    source={{ uri: 'https://d29fhpw069ctt2.cloudfront.net/icon/image/39219/preview.png' }}
+                  />
+                </Pressable>
+              </View>
+
+              <View style={{ width: Dimensions.get('window').width, padding: 10, }}>
+                <Text>
+                  Tip type
+                </Text>
+                <TextInput
+                  onChangeText={setTipType}
+                  placeholder=' Parking? Train station distance?'
+                  placeholderTextColor='grey'
+                  style={{ height: 40, borderWidth: 1 }}
+                  value={tipType}
+                />
+              </View>
+
+              <View style={{ width: Dimensions.get('window').width, padding: 10, }}>
+                <Text>
+                  Tip information
+                </Text>
+                <TextInput
+                  onChangeText={setTipData}
+                  placeholder=' Parking address? The time to walk from station?'
+                  placeholderTextColor='grey'
+                  style={{ height: 40, borderWidth: 1 }}
+                  value={tipData}
+                />
+              </View>
+
 
             </View>
           </KeyboardAvoidingView>
@@ -166,7 +212,7 @@ const EventInfo = ({ navigation, route }) => {
 
         <View style={{ marginTop: 10, borderRadius: 20, borderWidth: 2, borderColor: 'black' }}>
           <Pressable 
-            onPress={deleteAlert}
+            onPress={() => setModalVisible(true)}
             style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'row', height: 40, backgroundColor: '', }}
           >
             <Text style={{ fontSize: 20, fontWeight: 'bold' }}>
