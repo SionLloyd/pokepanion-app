@@ -41,6 +41,9 @@ const Finder = ({ navigation }) => {
         <SectionList
           sections={sortedEvents}
           keyExtractor={(item, index) => index.toString()}
+          ListFooterComponent={() => (
+            <View style={{ height: 50 }}/>
+          )}
           renderItem={(item) => renderItem(item)}
           renderSectionHeader={({ section }) => (
             <>
