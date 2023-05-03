@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Alert,
   Dimensions,
-  FlatList,
   Image,
   KeyboardAvoidingView,
   Modal,
@@ -23,26 +22,50 @@ const EVENTDATA = [
   {'title': 'Cost', 'data': '£20'}
 ];
 
-const TRAINERTIPSDATA = [
-  {'title': 'Parking', 'data': 'Unnamed Road, Southsea, Portsmouth, Southsea PO1 2DJ'}
-];
-
 const EventInfo = ({ navigation, route }) => {
 
-  const { eventId, eventTips } = route.params
+  const { event } = route.params
 
   const [modalVisible, setModalVisible] = useState(false)
+  const [trainerTipsData, setTrainerTipsData] = useState([])
 
-  const addTrainerTip = () => {
+  useEffect(() => {
+    console.log('here', event)
+    getTrainerTips()
+  }, [])
+
+  const getTrainerTips = () => {
+    async function getTips() {
+      try {
+        await fetch(
+          'http://localhost:8000/api/tip/get/id', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ id: event._id })
+          }
+        ).then(res => res.json())
+        .then(res => setTrainerTipsData(res))
+        .catch(err => console.log(err))
+        console.log('getTips')
+      } catch (error) {
+        console.error(error)
+      }
+    }
+
+    getTips()
+  }
+
+  const addTrainerTip = (tipType: String, tipData: String) => {
     async function addTip() {
       try {
         await fetch(
-          'http://localhost:8000/api/events/add/tip', {
+          'http://localhost:8000/api/tip/add', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({id: eventId, tip: eventTips})
+            body: JSON.stringify({ id: event._id, type: tipType, data: tipData })
           }
-        ).then(res => console.log(res)).catch(err => console.log(err))
+        ).then(getTrainerTips)
+        .catch(err => console.log(err))
         console.log('addTip')
       } catch (error) {
         console.error(error)
@@ -107,6 +130,27 @@ const EventInfo = ({ navigation, route }) => {
                 />
               </View>
 
+              <View style={{ width: Dimensions.get('window').width, padding: 10 }}>
+                <Pressable 
+                  style={{ height: 40, alignItems: 'center', justifyContent: 'center', backgroundColor: 'cyan', borderRadius: 20, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.25, shadowRadius: 4, elevation: 5 }} 
+                  onPress={() => {
+                    addTrainerTip(tipType, tipData)
+                    setModalVisible(!modalVisible)
+                  }}
+                >
+                  <Text style={{ fontWeight: 'bold' }}>
+                    Submit
+                  </Text>
+                </Pressable>
+              </View>
+
+              <View style={{ width: Dimensions.get('window').width, padding: 10 }}>
+                <Text style={{ fontStyle: 'italic' }}>
+                  Submitting a trainer tip will await approval from an admin as a valid tip.{"\n"}
+                  Any false or "troll" tips will be marked against your account potentially
+                  leading to a ban.
+                </Text>
+              </View>
 
             </View>
           </KeyboardAvoidingView>
@@ -139,12 +183,11 @@ const EventInfo = ({ navigation, route }) => {
   const deleteEvent = () => {
     async function deletePost() {
       try {
-        console.log(eventId)
         await fetch(
           'http://localhost:8000/api/events/delete/id', {
             method: 'DELETE',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({id: eventId})
+            body: JSON.stringify({id: event._id})
           }
         ).then(res => console.log(res)).catch(err => console.log(err))
         console.log('deleteEvent')
@@ -153,31 +196,80 @@ const EventInfo = ({ navigation, route }) => {
       }
     }
 
+    async function deleteTrainerTips() {
+      try {
+        await fetch(
+          'http://localhost:8000/api/tip/delete/all', {
+            method: 'DELETE',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({id: event._id})
+          }
+        ).then(res => console.log(res)).catch(err => console.log(err))
+        console.log('deleteTrainerTips')
+      } catch (error) {
+        console.error(error)
+      }
+    }
+
+    deleteTrainerTips()
     deletePost()
+    navigation.pop()
   }
 
-  const RenderEventInfo = ({item}) => {
+  const RenderEventInfo = () => {
     return (
-      <View style={{ padding: 10, justifyContent: 'center' }}>
-        <Text style={{ color: 'black', fontWeight: 'bold' }}>
-          {item.title}
-        </Text>
-        <Text style={{ color: 'black' }}>
-          {item.data}
-        </Text>
-      </View>
-    )
-  }
+      <View style={{ flex: 1, width: Dimensions.get('window').width }}>
+        <View style={{ padding: 5 }}>
+          <Text style={{ fontSize: 20, fontWeight: 'bold' }}>
+            Event Information
+          </Text>
+        </View>
 
-  const RenderTrainerTips = ({item}) => {
-    return (
-      <View style={{ padding: 10, justifyContent: 'center' }}>
-        <Text style={{ color: 'black', fontWeight: 'bold' }}>
-          {item.title}
-        </Text>
-        <Text style={{ color: 'black' }}>
-          {item.data}
-        </Text>
+        <View style={{ padding: 10, justifyContent: 'center' }}>
+          <Text style={{ color: 'black', fontWeight: 'bold' }}>
+            Where
+          </Text>
+          <Text style={{ color: 'black' }}>
+            {event.location}
+          </Text>
+        </View>
+
+        <View style={{ padding: 10, justifyContent: 'center' }}>
+          <Text style={{ color: 'black', fontWeight: 'bold' }}>
+            When
+          </Text>
+          <Text style={{ color: 'black' }}>
+            {event.date}
+          </Text>
+        </View>
+
+        <View style={{ padding: 10, justifyContent: 'center' }}>
+          <Text style={{ color: 'black', fontWeight: 'bold' }}>
+            Event type
+          </Text>
+          <Text style={{ color: 'black' }}>
+            League {event.type}
+          </Text>
+        </View>
+
+        <View style={{ padding: 10, justifyContent: 'center' }}>
+          <Text style={{ color: 'black', fontWeight: 'bold' }}>
+            Rewards
+          </Text>
+          <Text style={{ color: 'black' }}>
+            {event.rewards}
+          </Text>
+        </View>
+
+        <View style={{ padding: 10, justifyContent: 'center' }}>
+          <Text style={{ color: 'black', fontWeight: 'bold' }}>
+            Cost
+          </Text>
+          <Text style={{ color: 'black' }}>
+            {event.cost}
+          </Text>
+        </View>
+
       </View>
     )
   }
@@ -185,30 +277,30 @@ const EventInfo = ({ navigation, route }) => {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '', alignItems: 'center' }}>
       <ScrollView style={{ flex: 1, borderStartColor: 'green' }}>
-        <View style={{ padding: 5 }}>
-          <Text style={{ fontSize: 20, fontWeight: 'bold' }}>
-            Event Information
-          </Text>
+
+        <RenderEventInfo/>
+
+        <View style={{ flex: 1, width: Dimensions.get('window').width }}>
+          <View style={{ padding: 5 }}>
+            <Text style={{ fontSize: 20, fontWeight: 'bold' }}>
+              Trainer Tips
+            </Text>
+          </View>
+          {
+            trainerTipsData.map((trainerTip) => {
+              return (
+                <View style={{ padding: 10, justifyContent: 'center' }}>
+                  <Text style={{ color: 'black', fontWeight: 'bold' }}>
+                    {trainerTip.type}
+                  </Text>
+                  <Text style={{ color: 'black' }}>
+                    {trainerTip.data}
+                  </Text>
+                </View>
+              )
+            })
+          }
         </View>
-        
-
-        <FlatList
-          data={EVENTDATA}
-          renderItem={(item) => RenderEventInfo(item)}
-          keyExtractor={(item, index) => index.toString()}
-        />
-
-        <View style={{ padding: 5 }}>
-          <Text style={{ fontSize: 20, fontWeight: 'bold' }}>
-            Trainer Tips
-          </Text>
-        </View>
-
-        <FlatList
-          data={TRAINERTIPSDATA}
-          renderItem={(item) => RenderTrainerTips(item)}
-          keyExtractor={(item, index) => index.toString()}
-        />
 
         <View style={{ marginTop: 10, borderRadius: 20, borderWidth: 2, borderColor: 'black' }}>
           <Pressable 
@@ -220,7 +312,6 @@ const EventInfo = ({ navigation, route }) => {
             </Text>
           </Pressable>
         </View>
-        
 
         <AddTrainerTipModal/>
       
@@ -237,7 +328,6 @@ const EventInfo = ({ navigation, route }) => {
         </Pressable>
       </View>
 
-      
     </SafeAreaView>
   );
 }

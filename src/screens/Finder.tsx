@@ -8,6 +8,7 @@ import {
   Platform,
   Pressable,
   SafeAreaView,
+  ScrollView,
   SectionList,
   Text,
   TextInput,
@@ -101,22 +102,23 @@ const Finder = ({ navigation }) => {
   ]);
 
   useEffect(() => {
-    const getEvents = async () => {
-      await getAllEvents()
-    }
-    getEvents()
+    getAllEvents()
   }, [])
 
-  const getAllEvents = async () => {
-    try {
-      const response = await fetch('http://localhost:8000/api/events/')
-      const json = await response.json()
-      await sortAllEvents(json).then(() => {
-        setLoading(false)
-      })
-    } catch (error) {
-      console.error(error)
+  const getAllEvents = () => {
+    async function getEvents() {
+      try {
+        const response = await fetch('http://localhost:8000/api/events/')
+        const json = await response.json()
+        await sortAllEvents(json).then(() => {
+          setLoading(false)
+        })
+      } catch (error) {
+        console.error(error)
+      }
     }
+    
+    getEvents()
   }
 
   const sortAllEvents = async (events: any) => {
@@ -144,9 +146,12 @@ const Finder = ({ navigation }) => {
   }
 
   const AddEvent = () => {
-    const [eventName, setEventName] = React.useState('');
-    const [eventType, setEventType] = React.useState('');
-    const [eventDate, setEventDate] = React.useState('');
+    const [eventName, setEventName] = React.useState('')
+    const [eventType, setEventType] = React.useState('')
+    const [eventDate, setEventDate] = React.useState('')
+    const [eventLocation, setEventLocation] = React.useState('');
+    const [eventRewards, setEventRewards] = React.useState('');
+    const [eventCost, setEventCost] = React.useState('');
 
     return (
       <View style={{flex: 1}}>
@@ -156,7 +161,7 @@ const Finder = ({ navigation }) => {
           visible={modalVisible}
           onRequestClose={() => {}}>
           <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{flex: 1, justifyContent: 'flex-end', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.7)' }}>
-            <View style={{ height: Dimensions.get('window').height / 2, width: Dimensions.get('window').width, margin: 10, backgroundColor: 'white', borderRadius: 20, padding: 35, alignItems: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.25, shadowRadius: 4, elevation: 5}}> 
+            <ScrollView contentContainerStyle={{alignItems: 'center'}} style={{ backgroundColor: 'white' }}> 
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: Dimensions.get('window').width, padding: 10 }}>
                 <Text style={{ fontSize: 25, fontWeight: 'bold' }}>
                   New event
@@ -209,11 +214,50 @@ const Finder = ({ navigation }) => {
                 />
               </View>
 
+              <View style={{ width: Dimensions.get('window').width, padding: 10, }}>
+                <Text>
+                  Location
+                </Text>
+                <TextInput
+                  onChangeText={setEventLocation}
+                  placeholder=' Store or venue name'
+                  placeholderTextColor='grey'
+                  style={{ height: 40, borderWidth: 1 }}
+                  value={eventLocation}
+                />
+              </View>
+
+              <View style={{ width: Dimensions.get('window').width, padding: 10, }}>
+                <Text>
+                  Rewards
+                </Text>
+                <TextInput
+                  onChangeText={setEventRewards}
+                  placeholder=' Prize packs? Playmat?'
+                  placeholderTextColor='grey'
+                  style={{ height: 40, borderWidth: 1 }}
+                  value={eventRewards}
+                />
+              </View>
+
+              <View style={{ width: Dimensions.get('window').width, padding: 10, }}>
+                <Text>
+                  Cost
+                </Text>
+                <TextInput
+                  onChangeText={setEventCost}
+                  placeholder=' £££'
+                  placeholderTextColor='grey'
+                  style={{ height: 40, borderWidth: 1 }}
+                  value={eventCost}
+                />
+              </View>
+
               <View style={{ width: Dimensions.get('window').width, padding: 10 }}>
                 <Pressable 
                   style={{ height: 40, alignItems: 'center', justifyContent: 'center', backgroundColor: 'cyan', borderRadius: 20, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.25, shadowRadius: 4, elevation: 5 }} 
                   onPress={() => {
-                    addRequest(eventName, eventType, eventDate)
+                    addRequest(eventName, eventType, eventDate, eventLocation, eventRewards, eventCost)
                     setModalVisible(!modalVisible)
                   }}
                 >
@@ -223,24 +267,26 @@ const Finder = ({ navigation }) => {
                 </Pressable>
               </View>
               
-              
-            </View>
+            </ScrollView>
           </KeyboardAvoidingView>
         </Modal>
       </View>
     )
   }
 
-  const addRequest = (eventName: string, eventType: string, eventDate: string) => {
+  const addRequest = (eventName: string, eventType: string, eventDate: string, eventLocation: string, eventRewards: string, eventCost: string) => {
     async function addPost() {
       try {
         await fetch(
           'http://localhost:8000/api/events/add', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({name: eventName, type: eventType, date: eventDate})
+            body: JSON.stringify({name: eventName, type: eventType, date: eventDate, location: eventLocation, rewards: eventRewards, cost: eventCost})
           }
-        ).then(res => console.log(res)).catch(err => console.log(err))
+        ).then(res => res.json())
+        .then(res => getAllEvents)
+        .catch(err => console.log(err))
+        console.log('getTips')
         console.log('addPost')
       } catch (error) {
         console.error(error)
@@ -258,7 +304,7 @@ const Finder = ({ navigation }) => {
     return (
       <Pressable 
         style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginHorizontal: 5, marginBottom: 5 }}
-        onPress={() => navigation.navigate('EventInfo', { eventId: item._id, eventTips: item.tips })}
+        onPress={() => navigation.navigate('EventInfo', { event: item })}
       >
         <View style={{ flex: 1, backgroundColor: '', padding: 10, paddingBottom: 5 }}>
           <Text style={{ fontSize: 12, paddingBottom: 5 }}>{eventMonth}</Text>
