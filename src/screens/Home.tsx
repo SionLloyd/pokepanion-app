@@ -1,11 +1,11 @@
-import React from 'react';
+import React from 'react'
 import {
   Image,
   ImageBackground,
   Pressable,
   Text,
   View,
-} from 'react-native';
+} from 'react-native'
 
 const Home = ({ navigation }) => {
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react'
 import {
   ActivityIndicator,
   Dimensions,
@@ -13,18 +13,14 @@ import {
   Text,
   TextInput,
   View,
-} from 'react-native';
-import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
+} from 'react-native'
+import { TabView, SceneMap, TabBar } from 'react-native-tab-view'
+import auth from '@react-native-firebase/auth'
 import { format, parseISO } from 'date-fns'
 
-type event = {
-  _id: number,
-  name: string,
-  date: string,
-  type: string
-}
-
 const Finder = ({ navigation }) => {
+
+  const [userInfo, setUserInfo] = useState(Object)
 
   const [index, setIndex] = React.useState(0);
   const [isLoading, setLoading] = useState(true)
@@ -32,44 +28,66 @@ const Finder = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false)
 
   const FirstRoute = () => (
-    <SafeAreaView style={{ flex: 1, }}>
-      {isLoading ? (
-        <ActivityIndicator
-          animating
-          color={'red'}
-        />
+    <SafeAreaView style={{ flex: 1 }}>
+      {!userInfo.email ? (
+        <View style={{ flex: 1, backgroundColor: '#F2F2F2', alignItems: 'center', justifyContent: 'center' }}>
+          <Text style={{fontSize: 20, fontWeight: 'bold'}}>
+            Please sign in to use this feature..
+          </Text>
+          <View style={{padding: 50}}>
+            <Image
+              style={{height: 200, width: 200}}
+              resizeMode='contain'
+              source={{uri: 'https://archives.bulbagarden.net/media/upload/6/61/Red_on_computer.png'}}
+            />
+          </View>
+        </View>
       ) : (
-        <SectionList
-          sections={sortedEvents}
-          keyExtractor={(item, index) => index.toString()}
-          ListFooterComponent={() => (
-            <View style={{ height: 50 }}/>
-          )}
-          renderItem={(item) => renderItem(item)}
-          renderSectionHeader={({ section }) => (
+        <>
+          {isLoading ? (
+            <View style={{ flex: 1, justifyContent: 'center' }}>
+              <ActivityIndicator
+                animating
+                color={'red'}
+                size={'large'}
+              />
+            </View>
+          ) : (
             <>
-              <View style={{ backgroundColor: '#F2F2F2', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginHorizontal: 8 }}>
-                <Text style={{fontSize: 32, fontWeight: 'bold' }}>{section.title}</Text>
-                <Image
-                  style={{height: 50, width: 50}}
-                  resizeMode='contain'
-                  source={{ uri: 'https://static.vecteezy.com/system/resources/previews/014/586/732/original/calendar-icon-a-red-calendar-for-reminders-of-appointments-and-important-festivals-in-the-year-png.png'}}
-                />
+              <SectionList
+                sections={sortedEvents}
+                keyExtractor={(item, index) => index.toString()}
+                ListFooterComponent={() => (
+                  <View style={{ height: 50 }}/>
+                )}
+                renderItem={(item) => renderItem(item)}
+                renderSectionHeader={({ section }) => (
+                  <>
+                    <View style={{ backgroundColor: '#F2F2F2', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginHorizontal: 8 }}>
+                      <Text style={{fontSize: 32, fontWeight: 'bold' }}>{section.title}</Text>
+                      <Image
+                        style={{height: 50, width: 50}}
+                        resizeMode='contain'
+                        source={{ uri: 'https://static.vecteezy.com/system/resources/previews/014/586/732/original/calendar-icon-a-red-calendar-for-reminders-of-appointments-and-important-festivals-in-the-year-png.png'}}
+                      />
+                    </View>
+                  </>
+                )}
+              />
+              
+              <AddEvent/>
+          
+              <View style={{ flex: 1, justifyContent: 'flex-end', paddingBottom: 10 }}>
+                <Pressable onPress={() => setModalVisible(true)} style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'row', height: 50, backgroundColor: 'white', borderWidth: 2, borderColor: 'black', borderRadius: 20, marginHorizontal: 10 }}>
+                  <Text style={{ fontSize: 20, fontWeight: 'bold' }}>
+                    Add an event
+                  </Text>
+                </Pressable>
               </View>
             </>
           )}
-        />
+        </>
       )}
-
-      <AddEvent/>
-      
-      <View style={{ flex: 1, justifyContent: 'center', paddingBottom: 10}}>
-        <Pressable onPress={() => setModalVisible(true)} style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'row', height: 50, backgroundColor: 'white', borderWidth: 2, borderColor: 'black', borderRadius: 20, marginHorizontal: 10 }}>
-          <Text style={{ fontSize: 20, fontWeight: 'bold' }}>
-            Add an event
-          </Text>
-        </Pressable>
-      </View>
 
     </SafeAreaView>
   );
@@ -102,8 +120,20 @@ const Finder = ({ navigation }) => {
   ]);
 
   useEffect(() => {
-    getAllEvents()
+    const subscriber = auth().onAuthStateChanged(onAuthStateChanged)
+
+    return subscriber
   }, [])
+
+  const onAuthStateChanged = (user) => {
+    if (user) {
+      setUserInfo(user)
+      getAllEvents()
+    } else {
+      console.log('nope')
+      setUserInfo(false)
+    }
+  }
 
   const getAllEvents = () => {
     async function getEvents() {
