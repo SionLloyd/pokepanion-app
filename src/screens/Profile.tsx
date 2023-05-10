@@ -76,6 +76,12 @@ const Profile = ({ navigation }) => {
       setUserInfo({})
     } catch (error) {
       console.error(error)
+      await GoogleSignin.signOut()
+      auth()
+        .signOut()
+        .then(() => Alert.alert('Your are signed out!'))
+      setloggedIn(false)
+      setUserInfo({})
     }
   }
 

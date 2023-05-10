@@ -38,7 +38,7 @@ const Finder = ({ navigation }) => {
             <Image
               style={{height: 200, width: 200}}
               resizeMode='contain'
-              source={{uri: 'https://archives.bulbagarden.net/media/upload/6/61/Red_on_computer.png'}}
+              source={{uri: 'https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/2c3689ad-a9b3-42dc-a6a5-b06cff478ffb/d51atac-fd55b989-2757-4c68-af44-a6b2cceb6623.png/v1/fill/w_583,h_350/latios_use_computer_remake_by_redeyelatios_d51atac-350t.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9MzYwIiwicGF0aCI6IlwvZlwvMmMzNjg5YWQtYTliMy00MmRjLWE2YTUtYjA2Y2ZmNDc4ZmZiXC9kNTFhdGFjLWZkNTViOTg5LTI3NTctNGM2OC1hZjQ0LWE2YjJjY2ViNjYyMy5wbmciLCJ3aWR0aCI6Ijw9NjAwIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmltYWdlLm9wZXJhdGlvbnMiXX0.zD_HGL6QKpMfDG7uAYvQyeia5ybVgGfi4fVXtuMh6Gg'}}
             />
           </View>
         </View>
@@ -311,7 +311,7 @@ const Finder = ({ navigation }) => {
           'http://localhost:8000/api/events/add', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({name: eventName, type: eventType, date: eventDate, location: eventLocation, rewards: eventRewards, cost: eventCost})
+            body: JSON.stringify({name: eventName, type: eventType, date: eventDate, location: eventLocation, rewards: eventRewards, cost: eventCost, submittedBy: userInfo.email})
           }
         ).then(res => res.json())
         .then(res => getAllEvents)

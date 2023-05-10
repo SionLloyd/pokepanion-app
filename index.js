@@ -10,6 +10,7 @@ import EventInfo from './src/screens/EventInfo'
 import Finder from './src/screens/Finder'
 import GameScreen from './src/screens/GameScreen'
 import Home from './src/screens/Home'
+import MatchReport from './src/screens/MatchReport'
 import Pairings from './src/screens/Pairings'
 import Profile from './src/screens/Profile'
 import Settings from './src/screens/Settings'
@@ -76,6 +77,11 @@ const App = () => {
           name="EventInfo"
           component={EventInfo}
           options={{title: 'Information'}}
+        />
+        <Stack.Screen
+          name="MatchReport"
+          component={MatchReport}
+          options={{title: 'Match Report'}}
         />
       </Stack.Navigator>
     </NavigationContainer>

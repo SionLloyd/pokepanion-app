@@ -416,6 +416,8 @@ PODS:
     - React-Core
     - React-RCTImage
     - React-RCTText
+  - RNCAsyncStorage (1.18.1):
+    - React-Core
   - RNFBApp (17.4.3):
     - Firebase/CoreOnly (= 10.7.0)
     - React-Core
@@ -497,6 +499,7 @@ DEPENDENCIES:
   - React-runtimeexecutor (from `../node_modules/react-native/ReactCommon/runtimeexecutor`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - ReactNativeNavigation (from `../node_modules/react-native-navigation`)
+  - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
   - "RNFBAuth (from `../node_modules/@react-native-firebase/auth`)"
   - "RNGoogleSignin (from `../node_modules/@react-native-google-signin/google-signin`)"
@@ -593,6 +596,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon"
   ReactNativeNavigation:
     :path: "../node_modules/react-native-navigation"
+  RNCAsyncStorage:
+    :path: "../node_modules/@react-native-async-storage/async-storage"
   RNFBApp:
     :path: "../node_modules/@react-native-firebase/app"
   RNFBAuth:
@@ -656,6 +661,7 @@ SPEC CHECKSUMS:
   React-runtimeexecutor: c5c89f8f543842dd864b63ded1b0bbb9c9445328
   ReactCommon: 5307873a227ee34ddd3e7f2ec1086ebbfccc7618
   ReactNativeNavigation: 3ceed526f0439b8c310a09b7ca853499bfec51dc
+  RNCAsyncStorage: b90b71f45b8b97be43bc4284e71a6af48ac9f547
   RNFBApp: e8a35f0ef545dfa1be1f09411ea2078f870a9089
   RNFBAuth: 31b6758ea3471df5decffd65cdc8ecdaed8b39e5
   RNGoogleSignin: 22e468a9474dbcb8618d8847205ad4f0b2575d13
