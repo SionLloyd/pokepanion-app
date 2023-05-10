@@ -30,7 +30,6 @@ const EventInfo = ({ navigation, route }) => {
   const [trainerTipsData, setTrainerTipsData] = useState([])
 
   useEffect(() => {
-    console.log('here', event)
     getTrainerTips()
   }, [])
 

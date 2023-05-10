@@ -14,18 +14,55 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const Tournament = ({ navigation }) => {
 
+  enum roundResult {
+    Win = 'Win',
+    Tie = 'Tie',
+    Loss = 'Loss'
+  }
+
   const [playerName, setPlayerName] = React.useState('')
   const [eventName, setEventName] = React.useState('')
   const [deckName, setDeckName] = React.useState('')
+  const [rounds, setRounds] = React.useState([])
+  const [record, setRecord] = React.useState('')
+  const [points, setPoints] = React.useState(0)
   const arr = ['playerName', 'eventName', 'deckName']
-  const rounds = [{roundNumber: 1, deckPlayed: 'Lost Box Stone', record: 'WW'}]
-
 
   useEffect(() => {
     arr.forEach(element => {
       getDataFromStorage(element)
     })
   }, [])
+
+  useEffect(() => {
+    getMatchReports()
+    calculatePoints()
+  }, [])
+
+  /**
+   * Get all the match reports for the tournament
+   * @returns 
+   */
+  const getMatchReports = async () => {
+    async function getMatches() {
+      try {
+        const existingRounds = await AsyncStorage.getItem('@match_reports')
+        if (existingRounds) {
+          return JSON.parse(existingRounds)
+        } else {
+          console.log('[]')
+          return []
+        }
+      } catch (error) {
+        console.log('OH NO!', error)
+      }
+    }
+    
+    const matches = await getMatches()
+    console.log('here', matches)
+    setRounds(matches)
+    calculateRecordAndPoints(JSON.parse(matches))
+  }
 
   /**
    * Function to get a String value to AsyncStorage
@@ -90,8 +127,43 @@ const Tournament = ({ navigation }) => {
     }
   }
 
+  const calculateRecordAndPoints = (matches: any) => {
+    let currentPoints = 0
+    const matchesParse = JSON.parse(matches)
+    console.log(matchesParse)
+    matchesParse.forEach((match) => {
+      if (match.result === roundResult.Win) {
+        currentPoints + 3
+      } else if (match.result === roundResult.Tie) {
+        currentPoints + 1
+      } else {
+        currentPoints + 0 // ?
+      }
+    })
+    setPoints(currentPoints)
+  }
+
+  const calculateRecord = () => {
+
+  }
+
+  const calculatePoints = () => {
+    let currentPoints = points
+    rounds.forEach((round) => {
+      const roundParse = JSON.parse(round)
+      if (roundParse.result === roundResult.Win) {
+        currentPoints + 3
+      } else if (roundParse.result === roundResult.Tie) {
+        currentPoints + 1
+      } else {
+        currentPoints + 0 // ?
+      }
+    })
+    setPoints(currentPoints)
+  }
+
   return (
-    <SafeAreaView style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F2F2F2' }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#F2F2F2', alignItems: 'center', justifyContent: 'center', backgroundColor: '#F2F2F2' }}>
       <ScrollView style={{ flex: 1, borderStartColor: 'green' }}>
 
         <View style={{ flex: 1, paddingTop: 10 }}>
@@ -146,7 +218,7 @@ const Tournament = ({ navigation }) => {
             0-0-0
           </Text>
           <Text style={{ fontSize: 25, fontWeight: 'bold' }}>
-            0pts
+            {points}pts
           </Text>
         </View>
 
@@ -155,19 +227,22 @@ const Tournament = ({ navigation }) => {
 
           {
             rounds.map((round) => {
+              const roundParse = JSON.parse(round)
+              const roundColor = roundParse.result === roundResult.Win ? '#32d93a' : roundParse.result === roundResult.Loss ? '#d93232' : 'white'
+              //calculateRecord()
               return (
-                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', height: 50, borderWidth: 2, borderColor: 'black', marginHorizontal: 10 }}>
+                <View style={{ backgroundColor: roundColor, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', height: 50, marginHorizontal: 10, shadowColor: '#171717', shadowOffset: {width: -2, height: 4}, shadowOpacity: 0.2, shadowRadius: 3, borderRadius: 10 }}>
                   <Text style={{ paddingLeft: 5 }}>
-                    {round.roundNumber}
+                    {roundParse.round}
                   </Text>
                   <Text>
-                    {round.deckPlayed}
+                    {roundParse.deckName}
                   </Text>
                   <Text>
-                    {round.record}
+                    {roundParse.record}
                   </Text>
                   <View style={{ paddingRight: 5 }}>
-                    <Pressable onPress={() => navigation.navigate('MatchReport')}>
+                    <Pressable onPress={() => navigation.navigate('MatchReport', { roundParse: roundParse })}>
                       <Text>
                         Edit
                       </Text>
