@@ -71,6 +71,7 @@ const MatchReport = ({ navigation, route }) => {
               </Text>
             </View>
             <TextInput
+              editable={route.params?.roundParse ? false : true}
               onChangeText={setRound}
               placeholder=' Round Number'
               placeholderTextColor='grey'
@@ -87,6 +88,7 @@ const MatchReport = ({ navigation, route }) => {
               </Text>
             </View>
             <TextInput
+              editable={route.params?.roundParse ? false : true}
               onChangeText={setDeckName}
               placeholder=' Opponents Deck'
               placeholderTextColor='grey'
@@ -102,6 +104,7 @@ const MatchReport = ({ navigation, route }) => {
               </Text>
             </View>
             <TextInput
+              editable={route.params?.roundParse ? false : true}
               onChangeText={setRecord}
               placeholder=' Round Record'
               placeholderTextColor='grey'
@@ -116,6 +119,7 @@ const MatchReport = ({ navigation, route }) => {
             Match Report
           </Text>
           <TextInput
+            editable={route.params?.roundParse ? false : true}
             onChangeText={setMatchReport}
             placeholder='Fill in your match report with bragging rights, missplays or interesting techs your opponent had!'
             placeholderTextColor='grey'
@@ -125,57 +129,59 @@ const MatchReport = ({ navigation, route }) => {
           />
         </View>
 
-        <View style={{ height: 80, width: Dimensions.get('window').width, flexDirection: 'row', paddingTop: 10, paddingHorizontal: 10 }}>
+        {!route.params?.roundParse && (
+          <View style={{ height: 80, width: Dimensions.get('window').width, flexDirection: 'row', paddingTop: 10, paddingHorizontal: 10 }}>
 
-          <View style={{ flex: 1, flexDirection: 'row', borderRadius: 25, backgroundColor: '#32d93a', borderWidth: 2, borderColor: 'black', alignItems: 'center', justifyContent: 'center' }}>
-            <Pressable onPress={() => {
-              saveDataToStorage('Win')
-              navigation.pop()
-            }}>
-              <Image
-                style={{height: 30, width: 30}}
-                resizeMode='contain'
-                source={{ uri: 'https://cdn-icons-png.flaticon.com/512/87/87932.png'}}
-              />
-              <Text>
-                Win
-              </Text>
-            </Pressable>
+            <View style={{ flex: 1, flexDirection: 'row', borderRadius: 25, backgroundColor: '#32d93a', borderWidth: 2, borderColor: 'black', alignItems: 'center', justifyContent: 'center' }}>
+              <Pressable onPress={() => {
+                saveDataToStorage('Win')
+                navigation.pop()
+              }}>
+                <Image
+                  style={{height: 30, width: 30}}
+                  resizeMode='contain'
+                  source={{ uri: 'https://cdn-icons-png.flaticon.com/512/87/87932.png'}}
+                />
+                <Text>
+                  Win
+                </Text>
+              </Pressable>
+            </View>
+
+            <View style={{ flex: 1, borderRadius: 25, backgroundColor: 'white', borderWidth: 2, borderColor: 'black', alignItems: 'center', justifyContent: 'center', marginHorizontal: 5 }}>
+              <Pressable onPress={() => {
+                saveDataToStorage('Tie')
+                navigation.pop()
+              }}>
+                <Image
+                  style={{height: 30, width: 30}}
+                  resizeMode='contain'
+                  source={{ uri: 'https://static.thenounproject.com/png/3670439-200.png'}}
+                />
+                <Text>
+                  Tie
+                </Text>
+              </Pressable>
+            </View>
+
+            <View style={{ flex: 1, borderRadius: 25, backgroundColor: '#d93232', borderWidth: 2, borderColor: 'black', alignItems: 'center', justifyContent: 'center' }}>
+              <Pressable onPress={() => {
+                saveDataToStorage('Loss')
+                navigation.pop()
+              }}>
+                <Image
+                  style={{height: 30, width: 30}}
+                  resizeMode='contain'
+                  source={{ uri: 'https://cdn-icons-png.flaticon.com/512/45/45372.png'}}
+                />
+                <Text>
+                  Loss
+                </Text>
+              </Pressable>
+            </View>
+
           </View>
-
-          <View style={{ flex: 1, borderRadius: 25, backgroundColor: 'white', borderWidth: 2, borderColor: 'black', alignItems: 'center', justifyContent: 'center', marginHorizontal: 5 }}>
-            <Pressable onPress={() => {
-              saveDataToStorage('Tie')
-              navigation.pop()
-            }}>
-              <Image
-                style={{height: 30, width: 30}}
-                resizeMode='contain'
-                source={{ uri: 'https://static.thenounproject.com/png/3670439-200.png'}}
-              />
-              <Text>
-                Tie
-              </Text>
-            </Pressable>
-          </View>
-
-          <View style={{ flex: 1, borderRadius: 25, backgroundColor: '#d93232', borderWidth: 2, borderColor: 'black', alignItems: 'center', justifyContent: 'center' }}>
-            <Pressable onPress={() => {
-              saveDataToStorage('Loss')
-              navigation.pop()
-            }}>
-              <Image
-                style={{height: 30, width: 30}}
-                resizeMode='contain'
-                source={{ uri: 'https://cdn-icons-png.flaticon.com/512/45/45372.png'}}
-              />
-              <Text>
-                Loss
-              </Text>
-            </Pressable>
-          </View>
-
-        </View>
+        )}
 
       </View>
     </SafeAreaView>

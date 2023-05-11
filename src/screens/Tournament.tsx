@@ -39,7 +39,7 @@ const Tournament = ({ navigation }) => {
 
   useEffect(() => {
     getMatchReports()
-  }, [])
+  })
 
   /**
    * Get all the match reports for the tournament
@@ -62,11 +62,13 @@ const Tournament = ({ navigation }) => {
     }
     
     const matches = await getMatches()
+
     let arr = []
     matches?.forEach(match => {
       arr.push(JSON.parse(match))
     })
     setRounds(arr)
+
     const recordAndPoints = calculateRecordAndPoints(arr)
     setRecord(recordAndPoints[0])
     setPoints(recordAndPoints[1])
@@ -136,6 +138,11 @@ const Tournament = ({ navigation }) => {
     }
   }
 
+  /**
+   * Function to calculate the user's current tournament record and match points
+   * @param matches 
+   * @returns 
+   */
   const calculateRecordAndPoints = (matches: any) => {
     var currentPoints = 0
     var wins = 0
@@ -155,6 +162,14 @@ const Tournament = ({ navigation }) => {
     })
     const record = `${wins}-${losses}-${ties}`
     return [record, currentPoints]
+  }
+
+  const removeItemFromStorage = async () => {
+    try {
+      await AsyncStorage.removeItem('@MyApp_key')
+    } catch(e) {
+      // remove error
+    }
   }
 
   return (
@@ -244,11 +259,13 @@ const Tournament = ({ navigation }) => {
                     <Text>
                       {round.record}
                     </Text>
-                    <View style={{ paddingRight: 5 }}>
+                    <View style={{ paddingRight: 5, flexDirection: 'row' }}>
                       <Pressable onPress={() => navigation.navigate('MatchReport', { roundParse: round })}>
-                        <Text>
-                          Edit
-                        </Text>
+                        <Image
+                          style={{height: 30, width: 30}}
+                          resizeMode='cover'
+                          source={{uri: 'https://endlessicons.com/wp-content/uploads/2012/11/view-icon-614x460.png'}}
+                        />
                       </Pressable>
                     </View>
                   </View>
@@ -257,7 +274,13 @@ const Tournament = ({ navigation }) => {
             }
 
             <View style={{ flex: 1, justifyContent: 'flex-end', paddingTop: 10 }}>
-              <Pressable onPress={() => navigation.navigate('MatchReport')} style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'row', height: 50, backgroundColor: 'white', borderWidth: 2, borderColor: 'black', borderRadius: 20, marginHorizontal: 10 }}>
+              <Pressable 
+                style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'row', height: 50, backgroundColor: 'white', borderWidth: 2, borderColor: 'black', borderRadius: 20, marginHorizontal: 10 }} 
+                onPress={() => {
+                  setLoading(true)
+                  navigation.navigate('MatchReport')
+                }} 
+              >
                 <Text style={{ fontSize: 25, fontWeight: 'bold' }}>
                   + Add a round
                 </Text>
