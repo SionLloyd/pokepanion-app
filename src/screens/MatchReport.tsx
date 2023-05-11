@@ -132,27 +132,28 @@ const MatchReport = ({ navigation, route }) => {
         {!route.params?.roundParse && (
           <View style={{ height: 80, width: Dimensions.get('window').width, flexDirection: 'row', paddingTop: 10, paddingHorizontal: 10 }}>
 
-            <View style={{ flex: 1, flexDirection: 'row', borderRadius: 25, backgroundColor: '#32d93a', borderWidth: 2, borderColor: 'black', alignItems: 'center', justifyContent: 'center' }}>
-              <Pressable onPress={() => {
-                saveDataToStorage('Win')
-                navigation.pop()
-              }}>
-                <Image
-                  style={{height: 30, width: 30}}
-                  resizeMode='contain'
-                  source={{ uri: 'https://cdn-icons-png.flaticon.com/512/87/87932.png'}}
-                />
-                <Text>
-                  Win
-                </Text>
-              </Pressable>
-            </View>
+            <Pressable 
+              style={{ flex: 1, borderRadius: 25, backgroundColor: '#32d93a', borderWidth: 2, borderColor: 'black', alignItems: 'center', justifyContent: 'center', marginHorizontal: 5  }}
+              onPress={async () => {
+                await saveDataToStorage('Win')
+                navigation.navigate('Tournament')
+            }}>
+              <Image
+                style={{height: 30, width: 30}}
+                resizeMode='contain'
+                source={{ uri: 'https://cdn-icons-png.flaticon.com/512/87/87932.png'}}
+              />
+              <Text>
+                Win
+              </Text>
+            </Pressable>
 
-            <View style={{ flex: 1, borderRadius: 25, backgroundColor: 'white', borderWidth: 2, borderColor: 'black', alignItems: 'center', justifyContent: 'center', marginHorizontal: 5 }}>
-              <Pressable onPress={() => {
-                saveDataToStorage('Tie')
-                navigation.pop()
-              }}>
+            <Pressable
+              style={{ flex: 1, borderRadius: 25, backgroundColor: 'white', borderWidth: 2, borderColor: 'black', alignItems: 'center', justifyContent: 'center', marginHorizontal: 5  }}
+              onPress={async () => {
+                await saveDataToStorage('Tie')
+                navigation.navigate('Tournament')
+            }}>
                 <Image
                   style={{height: 30, width: 30}}
                   resizeMode='contain'
@@ -161,14 +162,14 @@ const MatchReport = ({ navigation, route }) => {
                 <Text>
                   Tie
                 </Text>
-              </Pressable>
-            </View>
+            </Pressable>
 
-            <View style={{ flex: 1, borderRadius: 25, backgroundColor: '#d93232', borderWidth: 2, borderColor: 'black', alignItems: 'center', justifyContent: 'center' }}>
-              <Pressable onPress={() => {
-                saveDataToStorage('Loss')
-                navigation.pop()
-              }}>
+            <Pressable
+              style={{ flex: 1, borderRadius: 25, backgroundColor: '#d93232', borderWidth: 2, borderColor: 'black', alignItems: 'center', justifyContent: 'center', marginHorizontal: 5  }}
+              onPress={async () => {
+                await saveDataToStorage('Loss')
+                navigation.navigate('Tournament')
+            }}>
                 <Image
                   style={{height: 30, width: 30}}
                   resizeMode='contain'
@@ -177,8 +178,7 @@ const MatchReport = ({ navigation, route }) => {
                 <Text>
                   Loss
                 </Text>
-              </Pressable>
-            </View>
+            </Pressable>
 
           </View>
         )}

@@ -42,12 +42,10 @@ const Profile = ({ navigation }) => {
     try {
       await GoogleSignin.hasPlayServices()
       const {accessToken, idToken} = await GoogleSignin.signIn()
-      console.log('here', idToken)
       const credential = auth.GoogleAuthProvider.credential(
         idToken,
         accessToken,
       )
-      console.log('here', credential)
       await auth().signInWithCredential(credential)
     } catch (error) {
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
@@ -97,38 +95,38 @@ const Profile = ({ navigation }) => {
             />
           </View>
 
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: Dimensions.get('window').width / 1.2, paddingTop: 20 }}>
-            <View style={{ flex: 1, alignItems: 'center', paddingRight: 10 }}>
-              <Text numberOfLines={1} adjustsFontSizeToFit style={{ fontSize: 20, color: 'grey', padding: 5 }}>
+          <View style={{ flexDirection: 'row', width: Dimensions.get('window').width / 1.2, paddingTop: 20 }}>
+            <View style={{ flex: 1, alignItems: 'flex-start', paddingRight: 0 }}>
+              <Text style={{ fontWeight: 'bold', fontSize: 30, paddingBottom: 0 }}>
+                0
+              </Text>
+              <Text numberOfLines={1} style={{ fontSize: 20, color: 'grey'}}>
                 Followers
               </Text>
-              <Text style={{ fontWeight: 'bold', fontSize: 15, }}>
-                0
-              </Text>
             </View>
 
-            <View style={{ flex: 1, alignItems: 'center', borderLeftWidth: 1, borderRightWidth: 1, borderColor: 'black', paddingHorizontal: 10 }}>
-              <Text numberOfLines={1} adjustsFontSizeToFit style={{ fontSize: 20, color: 'grey', padding: 5 }}>
+            <View style={{ flex: 1, alignItems: 'flex-start', paddingRight: 0 }}>
+              <Text style={{ fontWeight: 'bold', fontSize: 30, paddingBottom: 0 }}>
+                0
+              </Text>
+              <Text numberOfLines={1} style={{ fontSize: 20, color: 'grey'}}>
                 Following
               </Text>
-              <Text style={{ fontWeight: 'bold', fontSize: 15, }}>
-                0
-              </Text>
             </View>
 
-            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingLeft: 10 }}>
-              <Text numberOfLines={1} adjustsFontSizeToFit style={{ fontSize: 20, color: 'grey', padding: 5 }}>
-                Tournaments
-              </Text>
-              <Text style={{ fontWeight: 'bold', fontSize: 15, }}>
+            <View style={{ flex: 1, alignItems: 'flex-start', paddingRight: 0 }}>
+              <Text style={{ fontWeight: 'bold', fontSize: 30, paddingBottom: 0 }}>
                 0
+              </Text>
+              <Text numberOfLines={1} style={{ fontSize: 20, color: 'grey'}}>
+                Events
               </Text>
             </View>
 
           </View>
 
           <View style={{ marginTop: 30, borderWidth: 2, borderColor: 'black' }}>
-            <Text numberOfLines={1} adjustsFontSizeToFit style={{ fontSize: 16, color: 'grey', padding: 5 }}>
+            <Text numberOfLines={1} style={{ fontSize: 16, color: 'grey', padding: 5 }}>
               Recent Events:
             </Text>
             <View style={{ paddingTop: 20, alignItems: 'center' }}>
@@ -149,11 +147,11 @@ const Profile = ({ navigation }) => {
       )}
       <View style={{ flex: 1, justifyContent: 'flex-end', paddingBottom: 20 }}>
         {loggedIn ? (
-          <View style={{ width: 192, height: 48, justifyContent: 'center', borderWidth: 1, borderColor: 'grey' }}>
+          <View style={{ width: 192, height: 48, justifyContent: 'center', borderWidth: 2, borderColor: 'black' }}>
             <Button
               onPress={signOut}
               title="Log Out"
-              color="grey"/>
+              color="black"/>
           </View>
         ) : (
           <GoogleSigninButton

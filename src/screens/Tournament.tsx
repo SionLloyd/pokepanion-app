@@ -13,7 +13,7 @@ import {
 } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
-const Tournament = ({ navigation }) => {
+const Tournament = ({ navigation, route }) => {
 
   enum roundResult {
     Win = 'Win',
@@ -38,7 +38,9 @@ const Tournament = ({ navigation }) => {
   }, [])
 
   useEffect(() => {
+    // FIXME
     getMatchReports()
+    console.log('useEffect called 2')
   })
 
   /**
@@ -60,16 +62,16 @@ const Tournament = ({ navigation }) => {
         console.log('OH NO!', error)
       }
     }
-    
-    const matches = await getMatches()
 
+    const matches = await getMatches()
     let arr = []
     matches?.forEach(match => {
       arr.push(JSON.parse(match))
     })
+
     setRounds(arr)
 
-    const recordAndPoints = calculateRecordAndPoints(arr)
+    const recordAndPoints = await calculateRecordAndPoints(arr)
     setRecord(recordAndPoints[0])
     setPoints(recordAndPoints[1])
     setLoading(false)
@@ -132,7 +134,11 @@ const Tournament = ({ navigation }) => {
    */
   const clearAll = async () => {
     try {
+      setLoading(true)
       await AsyncStorage.clear()
+      setRounds([])
+      setRecord('0-0-0')
+      setPoints(0)
     } catch(e) {
       console.log('Error! Failed to clear all')
     }
@@ -143,7 +149,7 @@ const Tournament = ({ navigation }) => {
    * @param matches 
    * @returns 
    */
-  const calculateRecordAndPoints = (matches: any) => {
+  const calculateRecordAndPoints = async (matches: any) => {
     var currentPoints = 0
     var wins = 0
     var losses = 0
@@ -162,14 +168,6 @@ const Tournament = ({ navigation }) => {
     })
     const record = `${wins}-${losses}-${ties}`
     return [record, currentPoints]
-  }
-
-  const removeItemFromStorage = async () => {
-    try {
-      await AsyncStorage.removeItem('@MyApp_key')
-    } catch(e) {
-      // remove error
-    }
   }
 
   return (
@@ -249,10 +247,12 @@ const Tournament = ({ navigation }) => {
               rounds.map((round) => {
                 const roundColor = round.result === roundResult.Win ? '#32d93a' : round.result === roundResult.Loss ? '#d93232' : 'white'
                 return (
-                  <View style={{ backgroundColor: roundColor, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', height: 50, marginHorizontal: 10, shadowColor: '#171717', shadowOffset: {width: -2, height: 4}, shadowOpacity: 0.2, shadowRadius: 3, borderRadius: 10 }}>
-                    <Text style={{ paddingLeft: 5 }}>
-                      {round.round}
-                    </Text>
+                  <View style={{ backgroundColor: 'white', margin: 2, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', height: 50, marginHorizontal: 10, shadowColor: '#171717', shadowOffset: {width: -2, height: 4}, shadowOpacity: 0.2, shadowRadius: 3, borderRadius: 10 }}>
+                    <View style={{ backgroundColor: roundColor, width: 50, height: 50, alignItems: 'center', justifyContent: 'center', borderRadius: 10, borderColor: 'black', borderWidth: 1 }}>
+                      <Text>
+                        {round.round}
+                      </Text>
+                    </View>
                     <Text>
                       {round.deckName}
                     </Text>
