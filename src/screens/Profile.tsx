@@ -4,7 +4,7 @@ import {
   Button,
   Dimensions,
   Image,
-  SafeAreaView,
+  ImageBackground,
   Text,
   View,
 } from 'react-native'
@@ -34,7 +34,6 @@ const Profile = ({ navigation }) => {
 
   const onAuthStateChanged = (user) => {
     setUserInfo(user)
-    console.log(user)
     if (user) setloggedIn(true)
   }
 
@@ -85,7 +84,7 @@ const Profile = ({ navigation }) => {
 
   return (
     <View style={{ flex: 1, backgroundColor: '#F2F2F2', alignItems: 'center' }}>
-      {loggedIn && (
+      {loggedIn ? (
         <View>
 
           <View style={{ alignItems: 'center', paddingTop: 20 }}>
@@ -142,26 +141,43 @@ const Profile = ({ navigation }) => {
               </View>
             </View>
           </View>
-          
-        </View>
-      )}
-      <View style={{ flex: 1, justifyContent: 'flex-end', paddingBottom: 20 }}>
-        {loggedIn ? (
+
           <View style={{ width: 192, height: 48, justifyContent: 'center', borderWidth: 2, borderColor: 'black' }}>
             <Button
               onPress={signOut}
               title="Log Out"
               color="black"/>
           </View>
-        ) : (
+          
+        </View>
+      ) : (
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+          <View style={{ position: 'absolute', backgroundColor: 'white', top: 20, height: 120, width: Dimensions.get('window').width / 1.2, alignItems: 'center', justifyContent: 'center', borderRadius: 10, borderWidth: 2, borderColor: 'black' }}>
+            <Text style={{ fontSize: 50, fontWeight: 'bold' }}>
+              Pokepanion
+            </Text>
+          </View>
+
+          <View style={{ paddingBottom: 20 }}>
+            <Text style={{ fontSize: 20, fontWeight: 'bold' }}>
+              Please login to access the event finder
+            </Text>
+          </View>
+
+          <Image
+            style={{height: 200, width: 200, paddingTop: 20}}
+            resizeMode='contain'
+            source={{uri: 'https://archives.bulbagarden.net/media/upload/6/61/Red_on_computer.png'}}
+          />
+
           <GoogleSigninButton
-            style={{width: 192, height: 48}}
+            style={{width: 192, height: 48, position: 'absolute', bottom: 20}}
             size={GoogleSigninButton.Size.Wide}
             color={GoogleSigninButton.Color.Dark}
             onPress={signIn}
           />
-        )}
-      </View>
+        </View>
+      )}
     </View>
   )
 }

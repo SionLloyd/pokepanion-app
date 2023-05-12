@@ -4,6 +4,9 @@ import {
   Dimensions,
   Image,
   ImageBackground,
+  KeyboardAvoidingView,
+  Modal,
+  Platform,
   Pressable,
   SafeAreaView,
   ScrollView,
@@ -28,20 +31,17 @@ const Tournament = ({ navigation, route }) => {
   const [record, setRecord] = React.useState('')
   const [points, setPoints] = React.useState(0)
   const [isLoading, setLoading] = useState(true)
+  const [modalVisible, setModalVisible] = useState(false)
 
-  const arr = ['playerName', 'eventName', 'deckName']
+  const arr = ['eventName', 'deckName']
 
   useEffect(() => {
     arr.forEach(element => {
       getDataFromStorage(element)
     })
-  }, [])
-
-  useEffect(() => {
-    // FIXME
     getMatchReports()
-    console.log('useEffect called 2')
-  })
+    console.log('useEffect called 1')
+  }, [])
 
   /**
    * Get all the match reports for the tournament
@@ -75,6 +75,9 @@ const Tournament = ({ navigation, route }) => {
     setRecord(recordAndPoints[0])
     setPoints(recordAndPoints[1])
     setLoading(false)
+    if (arr.length === 0) {
+      setModalVisible(true)
+    }
   }
 
   /**
@@ -139,6 +142,7 @@ const Tournament = ({ navigation, route }) => {
       setRounds([])
       setRecord('0-0-0')
       setPoints(0)
+      setModalVisible(true)
     } catch(e) {
       console.log('Error! Failed to clear all')
     }
@@ -170,8 +174,101 @@ const Tournament = ({ navigation, route }) => {
     return [record, currentPoints]
   }
 
+  const EventDetailsModal = () => {
+
+    const [event, setEvent] = React.useState('');
+    const [deck, setDeck] = React.useState('');
+
+    return (
+      <View style={{flex: 1}}>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => {}}
+        >
+          <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{flex: 1, justifyContent: 'flex-end', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.7)' }}>
+            <View style={{ height: Dimensions.get('window').height / 2, width: Dimensions.get('window').width, margin: 10, backgroundColor: 'white', borderRadius: 20, padding: 35, alignItems: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.25, shadowRadius: 4, elevation: 5}}> 
+              
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: Dimensions.get('window').width, padding: 10 }}>
+                <Text style={{ fontSize: 25, fontWeight: 'bold' }}>
+                  Event Information
+                </Text>
+                <Pressable style={{ height: 30, width: 30, justifyContent: 'center' }} 
+                  onPress={() => {
+                    if (!(event.length === 0 || deck.length === 0)) {
+                      setModalVisible(!modalVisible)
+                    }
+                  }}
+                >
+                  <Image
+                    style={{height: 30, width: 30}}
+                    resizeMode='contain'
+                    source={{ uri: 'https://d29fhpw069ctt2.cloudfront.net/icon/image/39219/preview.png' }}
+                  />
+                </Pressable>
+              </View>
+
+              <View style={{ width: Dimensions.get('window').width, padding: 10, }}>
+                <Text>
+                  Event name
+                </Text>
+                <TextInput
+                  placeholder=' Location & event type'
+                  placeholderTextColor='grey'
+                  style={{ height: 40, borderWidth: 1 }}
+                  onChangeText={setEvent}
+                  value={event}                
+                />
+              </View>
+
+              <View style={{ width: Dimensions.get('window').width, padding: 10, }}>
+                <Text>
+                  Deck choice
+                </Text>
+                <TextInput
+                  placeholder=' What are you winning with?'
+                  placeholderTextColor='grey'
+                  style={{ height: 40, borderWidth: 1 }}
+                  onChangeText={setDeck}
+                  value={deck}
+                />
+              </View>
+
+              <View style={{ width: Dimensions.get('window').width, padding: 10 }}>
+                <Pressable 
+                  style={{ height: 40, alignItems: 'center', justifyContent: 'center', backgroundColor: 'cyan', borderRadius: 20, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.25, shadowRadius: 4, elevation: 5 }} 
+                  onPress={() => {
+                    saveDataToStorage('eventName', event)
+                    saveDataToStorage('deckName', deck)
+                    setModalVisible(!modalVisible)
+                    if (isLoading) {
+                      setLoading(false)
+                    }
+                  }}
+                >
+                  <Text style={{ fontWeight: 'bold' }}>
+                    Submit
+                  </Text>
+                </Pressable>
+              </View>
+
+              <View style={{ width: Dimensions.get('window').width, padding: 10 }}>
+                <Text style={{ fontStyle: 'italic' }}>
+                  As this is a V1, if you make any mistakes, press clear tournament and start again.{"\n"}
+                  This will be fixed in a future release.
+                </Text>
+              </View>
+
+            </View>
+          </KeyboardAvoidingView>
+        </Modal>
+      </View>
+    )
+  }
+
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#F2F2F2', alignItems: 'center', justifyContent: 'center', backgroundColor: '#F2F2F2' }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#F2F2F2', alignItems: 'center', justifyContent: 'center' }}>
       <ScrollView style={{ flex: 1, borderStartColor: 'green' }}>
 
         {isLoading ? (
@@ -185,49 +282,16 @@ const Tournament = ({ navigation, route }) => {
         ) : (
           <>
           <View style={{ flex: 1, paddingTop: 10 }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, width: Dimensions.get('window').width}}>
-              <View style={{ height: 40, width: 50, alignItems: 'center', justifyContent: 'center',  }}>
-                <Text>
-                  Name
-                </Text>
-              </View>
-              <TextInput
-                onChangeText={(data) => saveDataToStorage('playerName', data)}
-                placeholder=' Your name'
-                placeholderTextColor='grey'
-                style={{ height: 40, flex: 1, borderWidth: 1 }}
-                value={playerName}
-              />
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 20, width: Dimensions.get('window').width}}>
+              <Text style={{ fontSize: 30, fontWeight: 'bold', textAlign: 'center' }}>
+                {eventName}
+              </Text>
             </View>
 
-            <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, width: Dimensions.get('window').width}}>
-              <View style={{ height: 40, width: 50, alignItems: 'center', justifyContent: 'center',  }}>
-                <Text>
-                  Event
-                </Text>
-              </View>
-              <TextInput
-                onChangeText={(data) => saveDataToStorage('eventName', data)}
-                placeholder=' Event name'
-                placeholderTextColor='grey'
-                style={{ height: 40, flex: 1, borderLeftWidth: 1, borderRightWidth: 1 }}
-                value={eventName}
-              />
-            </View>
-
-            <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, width: Dimensions.get('window').width}}>
-              <View style={{ height: 40, width: 50, alignItems: 'center', justifyContent: 'center',  }}>
-                <Text>
-                  Deck
-                </Text>
-              </View>
-              <TextInput
-                onChangeText={(data) => saveDataToStorage('deckName', data)}
-                placeholder=' Deck choice'
-                placeholderTextColor='grey'
-                style={{ height: 40, flex: 1, borderWidth: 1 }}
-                value={deckName}
-              />
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 20, paddingTop: 10, width: Dimensions.get('window').width}}>
+              <Text style={{ fontSize: 30, fontWeight: 'bold', textAlign: 'center' }}>
+                {deckName}
+              </Text>
             </View>
           </View>
 
@@ -298,6 +362,8 @@ const Tournament = ({ navigation, route }) => {
           </View>
           </>
         )}
+
+        <EventDetailsModal/>
 
       </ScrollView>
     </SafeAreaView>
