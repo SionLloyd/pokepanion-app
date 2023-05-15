@@ -3,6 +3,7 @@ import {
   Dimensions,
   Image,
   ImageBackground,
+  Keyboard,
   Pressable,
   SafeAreaView,
   Text,
@@ -61,7 +62,7 @@ const MatchReport = ({ navigation, route }) => {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#F2F2F2', alignItems: 'center', justifyContent: 'center' }}>
-      <View style={{ flex: 1, justifyContent: 'flex-end' }}>
+      <Pressable style={{ flex: 1, justifyContent: 'flex-end' }} onPress={Keyboard.dismiss}>
 
         <View style={{ paddingVertical: 10 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, width: Dimensions.get('window').width}}>
@@ -183,7 +184,7 @@ const MatchReport = ({ navigation, route }) => {
           </View>
         )}
 
-      </View>
+      </Pressable>
     </SafeAreaView>
   );
 }

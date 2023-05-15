@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import {
   Dimensions,
+  Keyboard,
   Image,
   ImageBackground,
   Pressable,
@@ -19,6 +20,8 @@ const Calculator = ({ navigation }) => {
   const [eventTopCut, setEventTopCut] = useState('')
 
   const [cutOff, setCutOff] = useState('')
+  const [cutOffRecord, setCutOffRecord] = useState('')
+  const [revealStats, setRevealStats] = useState(false)
   const [p0, setP0] = useState('')
   const [p1, setP1] = useState('')
   const [p2, setP2] = useState('')
@@ -70,43 +73,44 @@ const Calculator = ({ navigation }) => {
                 console.log('p5')
               } else {
                 const valDiff = (topCutNumber - calcTopCut).toString()
+                setP5(p5.toString())
                 setCutOff(valDiff)
+                setCutOffRecord(`${Number(numberOfRounds) - 5}-5`)
                 console.log('p5 finish')
+                return
               }
             } else {
               const valDiff = (topCutNumber - calcTopCut).toString()
+              setP4(p4.toString())
               setCutOff(valDiff)
+              setCutOffRecord(`${Number(numberOfRounds) - 4}-4`)
               console.log('p4 finish')
+              return
             }
           } else {
             const valDiff = (topCutNumber - calcTopCut).toString()
+            setP3(p3.toString())
             setCutOff(valDiff)
+            setCutOffRecord(`${Number(numberOfRounds) - 3}-3`)
             console.log('p3 finish')
+            return
           }
         } else {
           const valDiff = (topCutNumber - calcTopCut).toString()
+          setP2(p2.toString())
           setCutOff(valDiff)
+          setCutOffRecord(`${Number(numberOfRounds) - 2}-2`)
           console.log('p2 finish')
+          return
         }
       }
     }
-
-    console.log(p0)
-    console.log(p1)
-    console.log(p2)
-    console.log(p3)
-    console.log(p4)
-    console.log(p5)
-    console.log(p6)
-    console.log(p7)
-    console.log(p8)
-
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+    <SafeAreaView style={{ flex: 1, alignItems: 'center', justifyContent: 'flex-start' }}>
       
-      <View style={{ flex: 1, paddingVertical: 10 }}>
+      <View style={{ paddingVertical: 10 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, paddingBottom: 20, width: Dimensions.get('window').width}}>
             <View style={{ height: 40, width: 60, alignItems: 'center', justifyContent: 'center',  }}>
               <Text style={{ marginRight: 10 }}>
@@ -155,10 +159,12 @@ const Calculator = ({ navigation }) => {
             />
           </View>
 
-          <View style={{ flex: 1, paddingTop: 20 }}>
+          <View style={{ paddingTop: 20 }}>
             <Pressable 
               style={{ alignItems: 'center', justifyContent: 'center', flexDirection: 'row', height: 50, backgroundColor: 'white', borderWidth: 2, borderColor: 'black', borderRadius: 20, marginHorizontal: 10 }} 
               onPress={() => {
+                Keyboard.dismiss()
+                setRevealStats(true)
                 calculateTopCut(numberOfPlayers, numberOfRounds, eventTopCut)
               }} 
             >
@@ -170,64 +176,77 @@ const Calculator = ({ navigation }) => {
 
         </View>
         
-        <View style={{ flex: 1, backgroundColor: 'red' }}>
+        {revealStats && (
+          <View style={{ flex: 1 }}>
 
-          { p0 && (
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 20, width: Dimensions.get('window').width}}>
               <Text style={{ fontSize: 30, fontWeight: 'bold', textAlign: 'center' }}>
-                {p0}
+                Based on {numberOfPlayers} players,{'\n'} {numberOfRounds} rounds of swiss,{'\n'} top cut of {eventTopCut}
               </Text>
             </View>
-          )}
-          
-          { p1 && (
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 20, width: Dimensions.get('window').width}}>
+
+            { p0 && (
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 20, paddingTop: 20, width: Dimensions.get('window').width}}>
+                <Text style={{ fontSize: 30, fontWeight: 'bold', textAlign: 'center' }}>
+                  {numberOfRounds}-0 - {Math.round(Number(p0) * 10) / 10}
+                </Text>
+              </View>
+            )}
+
+            { p1 && (
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 20, width: Dimensions.get('window').width}}>
+                <Text style={{ fontSize: 30, fontWeight: 'bold', textAlign: 'center' }}>
+                  {Number(numberOfRounds) - 1}-1 - {Math.round(Number(p1) * 10) / 10}
+                </Text>
+              </View>
+            )}
+
+            { p2 && (
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 20, width: Dimensions.get('window').width}}>
+                <Text style={{ fontSize: 30, fontWeight: 'bold', textAlign: 'center' }}>
+                  {Number(numberOfRounds) - 2}-2 - {Math.round(Number(p2) * 10) / 10}
+                </Text>
+              </View>
+            )}
+
+            { p3 && (
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 20, width: Dimensions.get('window').width}}>
+                <Text style={{ fontSize: 30, fontWeight: 'bold', textAlign: 'center' }}>
+                  {Number(numberOfRounds) - 3}-3 - {Math.round(Number(p3) * 10) / 10}
+                </Text>
+              </View>
+            )}
+
+            { p4 && (
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 20, width: Dimensions.get('window').width}}>
+                <Text style={{ fontSize: 30, fontWeight: 'bold', textAlign: 'center' }}>
+                  {Number(numberOfRounds) - 4}-4 - {Math.round(Number(p4) * 10) / 10}
+                </Text>
+              </View>
+            )}
+
+            { p5 && (
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 20, width: Dimensions.get('window').width}}>
+                <Text style={{ fontSize: 30, fontWeight: 'bold', textAlign: 'center' }}>
+                  {Number(numberOfRounds) - 5}-5 - {Math.round(Number(p5) * 10) / 10}
+                </Text>
+              </View>
+            )}
+
+            <View style={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 20, paddingTop: 20, width: Dimensions.get('window').width}}>
+              <Text style={{ fontSize: 30, fontWeight: 'bold', textAlign: 'center', textDecorationLine: 'underline' }}>
+                Cut off
+              </Text>
               <Text style={{ fontSize: 30, fontWeight: 'bold', textAlign: 'center' }}>
-                {p1}
+                {Math.round(Number(cutOff) * 10) / 10} players @ {cutOffRecord} will make top cut
+              </Text>
+              <Text style={{ fontSize: 30, textAlign: 'center', }}>
+                *All better records should be safe*
               </Text>
             </View>
-          )}
 
-          { p2 && (
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 20, width: Dimensions.get('window').width}}>
-              <Text style={{ fontSize: 30, fontWeight: 'bold', textAlign: 'center' }}>
-                {p2}
-              </Text>
             </View>
-          )}
-
-          { p3 && (
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 20, width: Dimensions.get('window').width}}>
-              <Text style={{ fontSize: 30, fontWeight: 'bold', textAlign: 'center' }}>
-                {p3}
-              </Text>
-            </View>
-          )}
-
-          { p4 && (
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 20, width: Dimensions.get('window').width}}>
-              <Text style={{ fontSize: 30, fontWeight: 'bold', textAlign: 'center' }}>
-                {p4}
-              </Text>
-            </View>
-          )}
-
-          { p5 && (
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 20, width: Dimensions.get('window').width}}>
-              <Text style={{ fontSize: 30, fontWeight: 'bold', textAlign: 'center' }}>
-                {p5}
-              </Text>
-            </View>
-          )}
-
-          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 20, width: Dimensions.get('window').width}}>
-            <Text style={{ fontSize: 30, fontWeight: 'bold', textAlign: 'center' }}>
-              {cutOff}
-            </Text>
-          </View>
-
-        </View>
-      
+        )}
 
     </SafeAreaView>
   );

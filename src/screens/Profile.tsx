@@ -85,7 +85,7 @@ const Profile = ({ navigation }) => {
   return (
     <View style={{ flex: 1, backgroundColor: '#F2F2F2', alignItems: 'center' }}>
       {loggedIn ? (
-        <View>
+        <View style={{ alignItems: 'center' }}>
 
           <View style={{ alignItems: 'center', paddingTop: 20 }}>
             <Image
@@ -142,7 +142,7 @@ const Profile = ({ navigation }) => {
             </View>
           </View>
 
-          <View style={{ width: 192, height: 48, justifyContent: 'center', borderWidth: 2, borderColor: 'black' }}>
+          <View style={{ width: 192, height: 48, justifyContent: 'center', borderWidth: 2, borderColor: 'black', marginTop: 10 }}>
             <Button
               onPress={signOut}
               title="Log Out"
